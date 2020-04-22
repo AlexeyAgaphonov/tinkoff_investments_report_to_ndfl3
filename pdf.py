@@ -17,29 +17,35 @@ class PaymentData():
     date: int
         Date of payment at unixtime 
     
-    payment_after_taxes: float
+    paymentAfterTaxes: float
         Value of dollars which we had took after USA draw part of it
     
-    CB_took_taxes: float
+    takedTaxesByCentralBank: float
         Value of dollars which USA drawed part of it
     
-    payment_by_a_paper: float
+    paymentByOneStock: float
         Value of dollars which we got before pay taxes
+
+    companyName: str
+        Name of company which  sent dividents to us
+
+    count: int
+        Amount of stocks
     
     description: str
         Desciption of position at report
     """
     def __init__(self):
         self.date = 0
-        self.payment_after_taxes = 0
-        self.CB_took_taxes = 0
-        self.payment_by_a_paper = 0
+        self.paymentAfterTaxes = 0
+        self.takedTaxesByCentralBank = 0
+        self.paymentByOneStock = 0
         self.companyName = ''
         self.count = 0
         self.description = ''
     
     def print(self):
-        print(self.date, self.payment_after_taxes, self.CB_took_taxes, self.payment_by_a_paper, self.companyName, '\nКоличество: %d' % self.count)
+        print(self.date, self.paymentAfterTaxes, self.takedTaxesByCentralBank, self.paymentByOneStock, self.companyName, '\nКоличество: %d' % self.count)
     
 
 class APdfReport():
@@ -80,9 +86,9 @@ class TinkoffPdfReport(APdfReport):
     def makeOnePayment(self, row_data):
         pd = PaymentData()
         pd.date = int(time.mktime(datetime.datetime.strptime(row_data[0], "%d.%m.%Y").timetuple()))
-        pd.payment_after_taxes = float(row_data[1].replace(',', '.'))
-        pd.CB_took_taxes = float(row_data[2].replace(',', '.'))
-        pd.payment_by_a_paper = float(row_data[3].replace(',', '.'))
+        pd.paymentAfterTaxes = float(row_data[1].replace(',', '.'))
+        pd.takedTaxesByCentralBank = float(row_data[2].replace(',', '.'))
+        pd.paymentByOneStock = float(row_data[3].replace(',', '.'))
         pd.description = row_data[4].replace('\n', '')
         re_result = re.findall(r'бумаге\s+(.+)[\s_]*ORD', pd.description)
         pd.companyName = re_result[0].strip().replace('_', '')
