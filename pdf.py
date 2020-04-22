@@ -88,6 +88,5 @@ class TinkoffPdfReport(APdfReport):
         pd.companyName = re_result[0].strip().replace('_', '')
         re_result = re.findall(r'Количество\s+-\s+(.+)\s*шт', pd.description)
         pd.count = int(re_result[0].strip())
-        pd.print()
         return pd
 
