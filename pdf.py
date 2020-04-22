@@ -1,5 +1,8 @@
 import io
+import re
 import json
+import time
+import datetime
 import camelot
 
 from abc import abstractmethod
@@ -31,10 +34,12 @@ class PaymentData():
         self.payment_after_taxes = 0
         self.CB_took_taxes = 0
         self.payment_by_a_paper = 0
+        self.companyName = ''
+        self.count = 0
         self.description = ''
     
     def print(self):
-        print(self.date, self.payment_after_taxes, self.CB_took_taxes, self.payment_by_a_paper, self.description)
+        print(self.date, self.payment_after_taxes, self.CB_took_taxes, self.payment_by_a_paper, self.companyName, '\nКоличество: %d' % self.count)
     
 
 class APdfReport():
@@ -74,11 +79,15 @@ class TinkoffPdfReport(APdfReport):
 
     def makeOnePayment(self, row_data):
         pd = PaymentData()
-        pd.date = row_data[0]
-        pd.payment_after_taxes = row_data[1]
-        pd.CB_took_taxes = row_data[2]
-        pd.payment_by_a_paper = row_data[3]
+        pd.date = int(time.mktime(datetime.datetime.strptime(row_data[0], "%d.%m.%Y").timetuple()))
+        pd.payment_after_taxes = float(row_data[1].replace(',', '.'))
+        pd.CB_took_taxes = float(row_data[2].replace(',', '.'))
+        pd.payment_by_a_paper = float(row_data[3].replace(',', '.'))
         pd.description = row_data[4].replace('\n', '')
+        re_result = re.findall(r'бумаге\s+(.+)[\s_]*ORD', pd.description)
+        pd.companyName = re_result[0].strip().replace('_', '')
+        re_result = re.findall(r'Количество\s+-\s+(.+)\s*шт', pd.description)
+        pd.count = int(re_result[0].strip())
         pd.print()
         return pd
 
